@@ -1,7 +1,9 @@
 import TodoListItem from './TodoListItem';
 
 function TodoList({ todoList, onCompleteTodo }) {
-  const filteredTodoList = todoList.filter((todo) => todo.isCompleted === true);
+  const filteredTodoList = todoList.filter(
+    (todo) => todo.isCompleted === false,
+  );
 
   return (
     <>
@@ -13,7 +15,7 @@ function TodoList({ todoList, onCompleteTodo }) {
             <TodoListItem
               key={todo.id}
               todo={todo}
-              onCompleteTodo={completeTodo}
+              onCompleteTodo={onCompleteTodo}
             />
           ))}
         </ul>

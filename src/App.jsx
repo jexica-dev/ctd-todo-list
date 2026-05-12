@@ -10,19 +10,21 @@ function App() {
     const newTodo = {
       id: Date.now(),
       title: todoTitle,
-      isComplete: false,
+      isCompleted: false,
     };
 
     setTodoList((prevTodoList) => [newTodo, ...prevTodoList]);
   }
 
   function completeTodo(id) {
-    todoList.map((id) => {
-      if (todo.id === id) {
-        return { ...todo, isCompleted: true };
+    const updatedList = todoList.map((item) => {
+      if (item.id === id) {
+        return { ...item, isCompleted: true };
       }
-      return todo;
+      return item;
     });
+
+    setTodoList(updatedList);
   }
 
   return (
