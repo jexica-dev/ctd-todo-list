@@ -5,14 +5,24 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   const [isEditing, setIsEditing] = useState(false);
   const [workingTitle, setWorkingTitle] = useState(todo.title);
 
-  const handleEdit = (e) => {
-    setWorkingTitle(e.target.value);
+  const handleUpdate = (e) => {
+    // Exit immediately if not in editing mode
+    if (!isEditing) {
+      return;
+    }
+
+    e.preventDefault();
+
+    onUpdateTodo({
+      ...todo,
+      title: workingTitle,
+    });
+
+    setIsEditing(false);
   };
 
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
-    onUpdateTodo(todo.id, workingTitle);
-    setIsEditing(false);
+  const handleEdit = (e) => {
+    setWorkingTitle(e.target.value);
   };
 
   const handleCancel = () => {
@@ -22,7 +32,7 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
 
   return (
     <li>
-      <form onSubmit={handleEditSubmit}>
+      <form onSubmit={handleUpdate}>
         {isEditing ? (
           <>
             <TextInputWithLabel
