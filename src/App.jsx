@@ -27,10 +27,10 @@ function App() {
     setTodoList(updatedList);
   }
 
-  const updateTodo = (id, newTitle) => {
+  const updateTodo = (editedTodo) => {
     const updatedTodos = todoList.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, title: newTitle };
+      if (todo.id === editedTodo.id) {
+        return editedTodo;
       }
       return todo;
     });

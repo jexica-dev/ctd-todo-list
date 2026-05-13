@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import TextInputWithLabel from '../../shared/TextInputWithLabel.jsx';
+import { isValidTodoTitle } from '../../utils/todoValidation.js';
 
 function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   const [isEditing, setIsEditing] = useState(false);
   const [workingTitle, setWorkingTitle] = useState(todo.title);
 
-  const handleUpdate = (e) => {
-    // Exit immediately if not in editing mode
-    if (!isEditing) {
-      return;
-    }
+  const isInvalid = !isValidTodoTitle(workingTitle);
 
-    e.preventDefault();
+  const handleUpdate = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
+    if (!isEditing || isInvalid) return;
 
     onUpdateTodo({
       ...todo,
-      title: workingTitle,
+      title: workingTitle.trim(),
     });
 
     setIsEditing(false);
@@ -43,6 +43,9 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
             />
             <button type="button" onClick={handleCancel}>
               Cancel
+            </button>
+            <button type="button" onClick={handleUpdate} disabled={isInvalid}>
+              Update
             </button>
           </>
         ) : (
