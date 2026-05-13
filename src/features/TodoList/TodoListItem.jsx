@@ -3,22 +3,38 @@ import TextInputWithLabel from '../../shared/TextInputWithLabel.jsx';
 
 function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(todo.title);
+  const [workingTitle, setWorkingTitle] = useState(todo.title);
+
+  const handleEdit = (e) => {
+    setWorkingTitle(e.target.value);
+  };
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
+    onUpdateTodo(todo.id, workingTitle);
     setIsEditing(false);
   };
+
+  const handleCancel = () => {
+    setWorkingTitle(todo.title);
+    setIsEditing(false);
+  };
+
   return (
     <li>
       <form onSubmit={handleEditSubmit}>
         {isEditing ? (
-          <TextInputWithLabel
-            labelText="Edit Todo"
-            elementId={`edit${todo.id}`}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+          <>
+            <TextInputWithLabel
+              labelText="Edit Todo"
+              elementId={`edit${todo.id}`}
+              value={workingTitle}
+              onChange={handleEdit}
+            />
+            <button type="button" onClick={handleCancel}>
+              Cancel
+            </button>
+          </>
         ) : (
           <>
             <label>
