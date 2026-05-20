@@ -11,8 +11,8 @@ function Logon({ onSetEmail, onSetToken }) {
     setAuthError('');
 
     try {
-      const response = await fetch('api/users/logon', {
-        method: POST,
+      const response = await fetch('/api/users/logon', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
