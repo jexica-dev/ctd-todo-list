@@ -230,6 +230,7 @@ function TodosPage({ token }) {
 
       <TodoList
         todoList={todoList}
+        dataVersion={dataVersion}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
       />
