@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList/TodoList';
+import SortBy from '../../shared/SortBy';
 
 function TodosPage({ token }) {
   const [todoList, setTodoList] = useState([]);
@@ -179,6 +180,13 @@ function TodosPage({ token }) {
       )}
 
       <h2>My Dashboard</h2>
+
+      <SortBy
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        onSortByChange={setSortBy}
+        onSortDirectionChange={setSortDirection}
+      />
 
       <TodoForm onAddTodo={addTodo} />
 
