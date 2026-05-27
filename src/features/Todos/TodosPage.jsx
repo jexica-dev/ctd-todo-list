@@ -9,6 +9,12 @@ function TodosPage({ token }) {
   const [isTodoListLoading, setIsTodoListLoading] = useState(false);
   const [sortBy, setSortBy] = useState('creationDate');
   const [sortDirection, setSortDirection] = useState('desc');
+  const [filterTerm, setFilterTerm] = useState('');
+  const debouncedFilterTerm = useDebounce(filterTerm, 300);
+
+  const handleFilterChange = (newTerm) => {
+    setFilterTerm(newTerm);
+  };
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -16,10 +22,16 @@ function TodosPage({ token }) {
       setError('');
 
       try {
-        const params = new URLSearchParams({
+        const paramsObject = {
           sortBy,
           sortDirection,
-        });
+        };
+
+        if (debouncedFilterTerm) {
+          paramsObject.find = debouncedFilterTerm;
+        }
+
+        const params = new URLSearchParams(paramsObject);
 
         const response = await fetch('/api/tasks?${params}', {
           method: 'GET',
@@ -45,7 +57,7 @@ function TodosPage({ token }) {
     if (token) {
       fetchTodos();
     }
-  }, [token, sortBy, sortDirection]);
+  }, [token, sortBy, sortDirection, debouncedFilterTerm]);
 
   const addTodo = async (title) => {
     const tempId = Date.now().toString();
