@@ -10,10 +10,10 @@ function App() {
   return (
     <>
       <div className="app-container">
-        <Header token={token} onSetToken={setToken} onSetEmail={setEmail} />
+        <Header />
         <main>
           {token ? (
-            <TodosPage />
+            <TodosPage token={token} />
           ) : (
             <Logon onSetEmail={setEmail} onSetToken={setToken} />
           )}
