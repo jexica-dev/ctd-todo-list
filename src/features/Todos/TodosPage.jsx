@@ -4,9 +4,10 @@ import TodoList from './TodoList/TodoList';
 
 function TodosPage({ token }) {
   const [todoList, setTodoList] = useState([]);
-
   const [error, setError] = useState('');
   const [isTodoListLoading, setIsTodoListLoading] = useState(false);
+  const [sortBy, setSortBy] = useState('creationDate');
+  const [sortDirection, setSortDirection] = useState('desc');
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -14,7 +15,12 @@ function TodosPage({ token }) {
       setError('');
 
       try {
-        const response = await fetch('/api/tasks', {
+        const params = new URLSearchParams({
+          sortBy,
+          sortDirection,
+        });
+
+        const response = await fetch('/api/tasks?${params}', {
           method: 'GET',
           headers: {
             'X-CSRF-TOKEN': token,
@@ -38,7 +44,7 @@ function TodosPage({ token }) {
     if (token) {
       fetchTodos();
     }
-  }, [token]);
+  }, [token, sortBy, sortDirection]);
 
   const addTodo = async (title) => {
     const tempId = Date.now().toString();
