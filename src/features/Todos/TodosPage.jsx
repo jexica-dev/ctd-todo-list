@@ -3,7 +3,7 @@ import TodoForm from './TodoForm';
 import TodoList from './TodoList/TodoList';
 import SortBy from '../../shared/SortBy';
 import FilterInput from '../../shared/FilterInput';
-import { useDebounce } from '../../utils/useDebounce';
+import useDebounce from '../../utils/useDebounce';
 
 function TodosPage({ token }) {
   const [todoList, setTodoList] = useState([]);
@@ -24,9 +24,6 @@ function TodosPage({ token }) {
   };
 
   const invalidateCache = useCallback(() => {
-    console.log(
-      '[invalidateCache]: Invalidating memo cache after todo mutation',
-    );
     setDataVersion((prev) => prev + 1);
   }, []);
 
