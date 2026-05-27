@@ -10,6 +10,8 @@ function TodosPage({ token }) {
   const [error, setError] = useState('');
   const [isTodoListLoading, setIsTodoListLoading] = useState(false);
 
+  const [filterError, setFilterError] = useState('');
+
   const [sortBy, setSortBy] = useState('creationDate');
   const [sortDirection, setSortDirection] = useState('desc');
   const [filterTerm, setFilterTerm] = useState('');
@@ -62,8 +64,18 @@ function TodosPage({ token }) {
 
         const data = await response.json();
         setTodoList(data.tasks || []);
+
+        setFilterError('');
       } catch (err) {
-        setError(err.message || 'An error has occurred while fetching tasks.');
+        if (
+          debouncedFilterTerm ||
+          sortBy !== 'creationDate' ||
+          sortDirection !== 'desc'
+        ) {
+          setFilterError(`Error filtering/sorting todos: ${err.message}`);
+        } else {
+          setError(`Error fetching todos: ${err.message}`);
+        }
       } finally {
         setIsTodoListLoading(false);
       }
@@ -192,6 +204,13 @@ function TodosPage({ token }) {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilterTerm('');
+    setSortBy('creationDate');
+    setSortDirection('desc');
+    setFilterError('');
+  };
+
   return (
     <div className="todos-page-container">
       {error && (
@@ -205,6 +224,30 @@ function TodosPage({ token }) {
           <button type="button" onClick={() => setError('')}>
             Clear Error
           </button>
+        </div>
+      )}
+
+      {filterError && (
+        <div
+          className="filter-error-banner"
+          style={{
+            border: '1px solid orange',
+            padding: '1rem',
+            marginBottom: '1rem',
+            backgroundColor: '#fff3cd',
+          }}
+        >
+          <p style={{ color: '#856404', margin: '0 0 0.5rem 0' }}>
+            <strong>Filter Error:</strong> {filterError}
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button type="button" onClick={() => setFilterError('')}>
+              Clear Filter Error
+            </button>
+            <button type="button" onClick={handleResetFilters}>
+              Reset Filters
+            </button>
+          </div>
         </div>
       )}
 
