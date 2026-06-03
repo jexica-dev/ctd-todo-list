@@ -184,11 +184,19 @@ function TodosPage({ token }) {
       {error && (
         <div className="error-banner">
           <p>{error}</p>
+          <button onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}>
+            Clear Error
+          </button>
         </div>
       )}
       {filterError && (
         <div className="filter-error-banner">
           <p>{filterError}</p>
+          <button
+            onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_FILTER_ERROR })}
+          >
+            Clear Filter Error
+          </button>
         </div>
       )}
 
