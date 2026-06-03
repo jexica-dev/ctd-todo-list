@@ -124,6 +124,7 @@ function TodosPage() {
     dispatch({ type: TODO_ACTIONS.COMPLETE_TODO_START, payload: id });
 
     try {
+      // Stripping everything down to the bare minimum
       const response = await fetch(`/api/tasks/${id}`, {
         method: 'PATCH',
         headers: {
@@ -133,12 +134,18 @@ function TodosPage() {
         credentials: 'include',
         body: JSON.stringify({
           isCompleted: !originalTodo.isCompleted,
-          createdAt: originalTodo.createdAt,
+          // Removed createdAt entirely to test backend strictness
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to update task');
+      if (!response.ok) {
+        // Capture the server's specific reason for the 400 error
+        const errorData = await response.json();
+        console.error('Server Error Details:', errorData);
+        throw new Error(errorData.message || 'Failed to update task');
+      }
 
+      dispatch({ type: TODO_ACTIONS.COMPLETE_TODO_SUCCESS, payload: id });
       invalidateCache();
     } catch (err) {
       dispatch({
@@ -149,31 +156,43 @@ function TodosPage() {
   };
 
   const updateTodo = async (editedTodo) => {
+    // 1. Destructure only the fields the server allows
+    const { title, isCompleted, createdAt } = editedTodo;
+
+    // 2. Build a strictly clean object
+    const cleanPayload = { title, isCompleted, createdAt };
+
+    console.log('CLEAN PAYLOAD BEING SENT:', cleanPayload);
+
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
     if (!originalTodo) return;
 
     dispatch({ type: TODO_ACTIONS.UPDATE_TODO_START, payload: editedTodo });
 
     try {
-      const response = await fetch(`/api/tasks/${editedTodo.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': token,
+      const response = await fetch(
+        `http://localhost:3000/tasks/${editedTodo.id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': token,
+          },
+          credentials: 'include',
+          body: JSON.stringify(cleanPayload),
         },
-        credentials: 'include',
-        body: JSON.stringify({
-          title: editedTodo.title,
-          isCompleted: editedTodo.isCompleted,
-          createdAt: editedTodo.createdAt,
-        }),
-      });
+      );
 
-      if (!response.ok) throw new Error('Failed to save edited title');
+      if (!response.ok) {
+        const errorData = await response.json();
+        // This will show us if it's 'title', 'isCompleted', or 'createdAt'
+        console.error('SERVER REJECTED PAYLOAD FIELDS:', errorData);
+        throw new Error(errorData.message || 'Failed to save edited title');
+      }
 
+      dispatch({ type: TODO_ACTIONS.UPDATE_TODO_SUCCESS, payload: editedTodo });
       invalidateCache();
     } catch (err) {
-      // 2. Rollback on failure
       dispatch({
         type: TODO_ACTIONS.UPDATE_TODO_ERROR,
         payload: { id: editedTodo.id, originalTodo, message: err.message },

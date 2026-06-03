@@ -62,18 +62,24 @@ export function todoReducer(state, action) {
       };
 
     case TODO_ACTIONS.COMPLETE_TODO_START:
-      return {
-        ...state,
-        todoList: state.todoList.map((t) =>
-          t.id === action.payload ? { ...t, isCompleted: !t.isCompleted } : t,
-        ),
-      };
+      return state;
+
     case TODO_ACTIONS.COMPLETE_TODO_ERROR:
       return {
         ...state,
         error: action.payload.message,
         todoList: state.todoList.map((t) =>
           t.id === action.payload.id ? action.payload.originalTodo : t,
+        ),
+      };
+
+    case TODO_ACTIONS.COMPLETE_TODO_SUCCESS:
+      return {
+        ...state,
+        todoList: state.todoList.map((todo) =>
+          todo.id === action.payload
+            ? { ...todo, isCompleted: !todo.isCompleted }
+            : todo,
         ),
       };
 

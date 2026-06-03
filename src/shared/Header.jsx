@@ -1,5 +1,5 @@
 import Logoff from '../features/Logoff';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 function Header() {
   const { isAuthenticated } = useAuth();
