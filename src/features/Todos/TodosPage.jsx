@@ -170,18 +170,15 @@ function TodosPage() {
     dispatch({ type: TODO_ACTIONS.UPDATE_TODO_START, payload: editedTodo });
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/tasks/${editedTodo.id}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token,
-          },
-          credentials: 'include',
-          body: JSON.stringify(cleanPayload),
+      const response = await fetch(`/api/tasks/${editedTodo.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': token,
         },
-      );
+        credentials: 'include',
+        body: JSON.stringify(cleanPayload),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -230,6 +227,12 @@ function TodosPage() {
           dispatch({
             type: TODO_ACTIONS.SET_SORT,
             payload: { sortBy: s, sortDirection: sortDirection },
+          })
+        }
+        onSortDirectionChange={(dir) =>
+          dispatch({
+            type: TODO_ACTIONS.SET_SORT,
+            payload: { sortBy: state.sortBy, sortDirection: dir },
           })
         }
       />
