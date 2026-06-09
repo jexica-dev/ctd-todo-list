@@ -2,7 +2,7 @@ import './App.css';
 import Header from './shared/Header';
 import Logon from './features/Logon';
 import TodosPage from './features/Todos/TodosPage';
-import { useAuth } from './contexts/AuthContext';
+import { Routes, Route } from 'react-router';
 
 function App() {
   const { isAuthenticated } = useAuth();
@@ -11,7 +11,7 @@ function App() {
     <>
       <div className="app-container">
         <Header />
-        <main>{isAuthenticated ? <TodosPage /> : <Logon />}</main>
+        <Routes></Routes>
       </div>
     </>
   );
