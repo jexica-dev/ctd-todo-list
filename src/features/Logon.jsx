@@ -1,43 +1,30 @@
 import { useState } from 'react';
-function Logon({ onSetEmail, onSetToken }) {
+import { useAuth } from '../contexts/AuthContext';
+
+function Logon() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [isLoggingOn, setIsLoggingOn] = useState(false);
+
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoggingOn(true);
     setAuthError('');
 
-    try {
-      const response = await fetch('/api/users/logon', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
+    const result = await login(email, password);
 
-      if (response.status === 200 && data.name && data.csrfToken) {
-        onSetEmail(data.name);
-        onSetToken(data.csrfToken);
-      } else {
-        setAuthError(
-          `Authentication failed: ${data?.message || 'Invalid Credentials'} `,
-        );
-      }
-    } catch (error) {
-      setAuthError(`Error: ${error.name} | ${error.message}`);
-    } finally {
-      setIsLoggingOn(false);
+    if (!result.success) {
+      setAuthError(result.error);
     }
+
+    setIsLoggingOn(false);
   };
+
   return (
     <>
-      {' '}
       <div className="logon-container">
         <h2>Log On</h2>
         {authError && (

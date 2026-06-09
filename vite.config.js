@@ -14,13 +14,23 @@ export default ({ mode }) => {
           target: env.VITE_TARGET,
           secure: false,
           changeOrigin: true,
-          configure: (proxy) => {
+          cookiePathRewrite: {
+            '*': '/',
+          },
+          cookieDomainRewrite: {
+            '*': 'localhost',
+          },
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log(
+                'Sending Request to Target:',
+                proxyReq.getHeader('X-CSRF-TOKEN'),
+              );
+            });
+
             proxy.on('proxyRes', (proxyRes) => {
               const cookies = proxyRes.headers['set-cookie'];
-
-              if (!cookies) {
-                return;
-              }
+              if (!cookies) return;
 
               const cookieArray = Array.isArray(cookies) ? cookies : [cookies];
               proxyRes.headers['set-cookie'] = cookieArray.map((cookie) =>
