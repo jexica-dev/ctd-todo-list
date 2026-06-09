@@ -121,7 +121,10 @@ function TodosPage() {
     const originalTodo = todoList.find((todo) => todo.id === id);
     if (!originalTodo) return;
 
-    dispatch({ type: TODO_ACTIONS.COMPLETE_TODO_START, payload: id });
+    dispatch({
+      type: TODO_ACTIONS.COMPLETE_TODO_START,
+      payload: { id: id },
+    });
 
     try {
       // Stripping everything down to the bare minimum
