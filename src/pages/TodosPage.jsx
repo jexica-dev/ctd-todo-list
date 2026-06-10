@@ -136,7 +136,6 @@ function TodosPage() {
     });
 
     try {
-      // Stripping everything down to the bare minimum
       const response = await fetch(`/api/tasks/${id}`, {
         method: 'PATCH',
         headers: {
