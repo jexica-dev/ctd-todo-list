@@ -8,22 +8,49 @@ function TodoList({
   onUpdateTodo,
   sortBy,
   sortDirection,
+  statusFilter = 'active',
 }) {
   const filteredTodoList = useMemo(() => {
-    console.log(`Recalculating filtered todos (v${dataVersion})`);
+    console.log(
+      `Recalculating filtered todos (v${dataVersion}) - Status: ${statusFilter}`,
+    );
 
-    const incompleteTodos = todoList.filter((todo) => !todo.isCompleted);
+    let filteredTodos;
+    switch (statusFilter) {
+      case 'completed':
+        filteredTodos = todoList.filter((todo) => todo.isCompleted);
+        break;
+      case 'active':
+        filteredTodos = todoList.filter((todo) => !todo.isCompleted);
+        break;
+      case 'all':
+      default:
+        filteredTodos = todoList;
+        break;
+    }
 
     return {
       version: dataVersion,
-      todos: incompleteTodos,
+      todos: filteredTodos,
     };
-  }, [todoList, dataVersion, sortBy, sortDirection]);
+  }, [todoList, dataVersion, sortBy, sortDirection, statusFilter]);
+
+  const getEmptyMessage = () => {
+    switch (statusFilter) {
+      case 'completed':
+        return 'No completed todos yet. Complete some tasks to see them here.';
+      case 'active':
+        return 'No active todos. Add a todo above to get started.';
+      case 'all':
+      default:
+        return 'Add todo above to get started.';
+    }
+  };
 
   return (
     <>
       {filteredTodoList.todos.length === 0 ? (
-        <p className="empty-state-notice">Add todo above to get started</p>
+        <p>{getEmptyMessage()}</p>
       ) : (
         <ul>
           {filteredTodoList.todos.map((todo) => (
