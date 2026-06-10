@@ -11,11 +11,13 @@ function ProfilePage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        setLoading(true);
         const response = await fetch('/api/tasks', {
           headers: { 'X-CSRF-TOKEN': token },
           credentials: 'include',
         });
 
+        if (response.status === 401) throw new Error('Unauthorized');
         if (!response.ok) throw new Error('Failed to fetch statistics');
 
         const data = await response.json();
@@ -36,6 +38,10 @@ function ProfilePage() {
 
     if (token) fetchStats();
   }, [token]);
+
+  // Calculate completion rate safely
+  const completionPercentage =
+    stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
   if (loading) return <p>Loading profile...</p>;
   if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
@@ -65,6 +71,9 @@ function ProfilePage() {
             <p>{stats.active}</p>
           </div>
         </div>
+        <p>
+          <strong>Completion Rate:</strong> {completionPercentage}%
+        </p>
       </section>
     </div>
   );

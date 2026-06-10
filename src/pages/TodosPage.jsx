@@ -59,7 +59,7 @@ function TodosPage() {
           method: 'GET',
           headers: {
             'X-CSRF-TOKEN': token,
-            'Cache-Control': 'no-cache',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
             Pragma: 'no-cache',
           },
           credentials: 'include',
@@ -262,6 +262,8 @@ function TodosPage() {
         dataVersion={dataVersion}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
         statusFilter={statusFilter}
       />
     </div>
