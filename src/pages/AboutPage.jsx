@@ -16,10 +16,10 @@ function AboutPage() {
             <strong>Task Management:</strong> Add, edit, and delete tasks
             seamlessly.
           </li>
-          {/* <li>
+          <li>
             <strong>Filtering & Sorting:</strong> Easily find what you need by
             filtering terms and sorting by date or status.
-          </li> */}
+          </li>
           <li>
             <strong>Secure Authentication:</strong> User-specific data protected
             by secure login sessions.
