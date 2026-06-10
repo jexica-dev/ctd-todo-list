@@ -1,8 +1,9 @@
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 
 function Navigation() {
   const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Helper function for NavLink style object
   const navLinkStyle = ({ isActive }) => ({
@@ -10,6 +11,11 @@ function Navigation() {
     textDecoration: isActive ? 'underline' : 'none',
     color: 'inherit',
   });
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <nav>
@@ -35,7 +41,7 @@ function Navigation() {
               </NavLink>
             </li>
             <li>
-              <button onClick={logout} style={{ cursor: 'pointer' }}>
+              <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
                 Logout
               </button>
             </li>

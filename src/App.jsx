@@ -1,6 +1,5 @@
 import './App.css';
 import Header from './shared/Header';
-import Logon from './features/Logon';
 import { Routes, Route } from 'react-router';
 import RequireAuth from './components/RequireAuth';
 import HomePage from './pages/HomePage';

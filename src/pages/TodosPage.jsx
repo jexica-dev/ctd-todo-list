@@ -38,7 +38,7 @@ function TodosPage() {
   };
 
   const invalidateCache = useCallback(() => {
-    console.log('Invalidating memo cache after todo mutation');
+    // console.log('Invalidating memo cache after todo mutation');
     dispatch({ type: TODO_ACTIONS.INCREMENT_VERSION });
   }, []);
 
@@ -53,7 +53,7 @@ function TodosPage() {
           ...(debouncedFilterTerm && { find: debouncedFilterTerm }),
         });
 
-        console.log('SENDING REQUEST TO:', `/api/tasks?${params.toString()}`);
+        // console.log('SENDING REQUEST TO:', `/api/tasks?${params.toString()}`);
 
         const response = await fetch(`/api/tasks?${params}`, {
           method: 'GET',
@@ -175,7 +175,7 @@ function TodosPage() {
     // 2. Build a strictly clean object
     const cleanPayload = { title, isCompleted };
 
-    console.log('CLEAN PAYLOAD BEING SENT:', cleanPayload);
+    // console.log('CLEAN PAYLOAD BEING SENT:', cleanPayload);
 
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
     if (!originalTodo) return;
