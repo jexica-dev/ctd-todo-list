@@ -48,10 +48,14 @@ function TodosPage() {
           ...(debouncedFilterTerm && { find: debouncedFilterTerm }),
         });
 
+        console.log('SENDING REQUEST TO:', `/api/tasks?${params.toString()}`);
+
         const response = await fetch(`/api/tasks?${params}`, {
           method: 'GET',
           headers: {
             'X-CSRF-TOKEN': token,
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
           },
           credentials: 'include',
         });
@@ -159,11 +163,13 @@ function TodosPage() {
   };
 
   const updateTodo = async (editedTodo) => {
+    console.log('Updating Todo Payload:', editedTodo);
+
     // 1. Destructure only the fields the server allows
-    const { title, isCompleted, createdAt } = editedTodo;
+    const { title, isCompleted } = editedTodo;
 
     // 2. Build a strictly clean object
-    const cleanPayload = { title, isCompleted, createdAt };
+    const cleanPayload = { title, isCompleted };
 
     console.log('CLEAN PAYLOAD BEING SENT:', cleanPayload);
 
