@@ -1,19 +1,24 @@
 import { useEffect, useCallback, useReducer } from 'react';
-import TodoForm from './TodoForm';
-import TodoList from './TodoList/TodoList';
-import SortBy from '../../shared/SortBy';
-import FilterInput from '../../shared/FilterInput';
-import useDebounce from '../../utils/useDebounce';
+import { useSearchParams } from 'react-router';
+import StatusFilter from '../shared/StatusFilter';
+import TodoForm from '../features/Todos/TodoForm';
+import TodoList from '../features/Todos/TodoList/TodoList';
+import FilterInput from '../shared/FilterInput';
+import useDebounce from '../utils/useDebounce';
 import {
   todoReducer,
   initialTodoState,
   TODO_ACTIONS,
-} from '../../reducers/todoReducer';
-import { useAuth } from '../../contexts/AuthContext';
+} from '../reducers/todoReducer';
+import { useAuth } from '../contexts/AuthContext';
+import SortBy from '../shared/SortBy';
 
 function TodosPage() {
   const { token } = useAuth();
   const [state, dispatch] = useReducer(todoReducer, initialTodoState);
+  const [searchParams] = useSearchParams();
+
+  const statusFilter = searchParams.get('status') || 'all';
 
   const {
     todoList,
@@ -33,7 +38,7 @@ function TodosPage() {
   };
 
   const invalidateCache = useCallback(() => {
-    console.log('Invalidating memo cache after todo mutation');
+    // console.log('Invalidating memo cache after todo mutation');
     dispatch({ type: TODO_ACTIONS.INCREMENT_VERSION });
   }, []);
 
@@ -48,10 +53,14 @@ function TodosPage() {
           ...(debouncedFilterTerm && { find: debouncedFilterTerm }),
         });
 
+        // console.log('SENDING REQUEST TO:', `/api/tasks?${params.toString()}`);
+
         const response = await fetch(`/api/tasks?${params}`, {
           method: 'GET',
           headers: {
             'X-CSRF-TOKEN': token,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
           },
           credentials: 'include',
         });
@@ -127,7 +136,6 @@ function TodosPage() {
     });
 
     try {
-      // Stripping everything down to the bare minimum
       const response = await fetch(`/api/tasks/${id}`, {
         method: 'PATCH',
         headers: {
@@ -159,13 +167,15 @@ function TodosPage() {
   };
 
   const updateTodo = async (editedTodo) => {
+    console.log('Updating Todo Payload:', editedTodo);
+
     // 1. Destructure only the fields the server allows
-    const { title, isCompleted, createdAt } = editedTodo;
+    const { title, isCompleted } = editedTodo;
 
     // 2. Build a strictly clean object
-    const cleanPayload = { title, isCompleted, createdAt };
+    const cleanPayload = { title, isCompleted };
 
-    console.log('CLEAN PAYLOAD BEING SENT:', cleanPayload);
+    // console.log('CLEAN PAYLOAD BEING SENT:', cleanPayload);
 
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
     if (!originalTodo) return;
@@ -239,7 +249,7 @@ function TodosPage() {
           })
         }
       />
-
+      <StatusFilter />
       <FilterInput
         filterTerm={filterTerm}
         onFilterChange={handleFilterChange}
@@ -251,6 +261,9 @@ function TodosPage() {
         dataVersion={dataVersion}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        statusFilter={statusFilter}
       />
     </div>
   );
