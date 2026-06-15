@@ -38,7 +38,6 @@ function TodosPage() {
   };
 
   const invalidateCache = useCallback(() => {
-    // console.log('Invalidating memo cache after todo mutation');
     dispatch({ type: TODO_ACTIONS.INCREMENT_VERSION });
   }, []);
 
@@ -52,8 +51,6 @@ function TodosPage() {
           sortDirection: sortDirection,
           ...(debouncedFilterTerm && { find: debouncedFilterTerm }),
         });
-
-        // console.log('SENDING REQUEST TO:', `/api/tasks?${params.toString()}`);
 
         const response = await fetch(`/api/tasks?${params}`, {
           method: 'GET',
@@ -145,14 +142,11 @@ function TodosPage() {
         credentials: 'include',
         body: JSON.stringify({
           isCompleted: !originalTodo.isCompleted,
-          // Removed createdAt entirely to test backend strictness
         }),
       });
 
       if (!response.ok) {
-        // Capture the server's specific reason for the 400 error
         const errorData = await response.json();
-        console.error('Server Error Details:', errorData);
         throw new Error(errorData.message || 'Failed to update task');
       }
 
@@ -167,15 +161,9 @@ function TodosPage() {
   };
 
   const updateTodo = async (editedTodo) => {
-    console.log('Updating Todo Payload:', editedTodo);
-
-    // 1. Destructure only the fields the server allows
     const { title, isCompleted } = editedTodo;
 
-    // 2. Build a strictly clean object
     const cleanPayload = { title, isCompleted };
-
-    // console.log('CLEAN PAYLOAD BEING SENT:', cleanPayload);
 
     const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
     if (!originalTodo) return;
@@ -195,8 +183,6 @@ function TodosPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        // This will show us if it's 'title', 'isCompleted', or 'createdAt'
-        console.error('SERVER REJECTED PAYLOAD FIELDS:', errorData);
         throw new Error(errorData.message || 'Failed to save edited title');
       }
 
@@ -210,61 +196,88 @@ function TodosPage() {
     }
   };
 
+  const reorderTodos = useCallback((dragIndex, dropIndex) => {
+    dispatch({
+      type: TODO_ACTIONS.REORDER_TODOS,
+      payload: { dragIndex, dropIndex },
+    });
+  }, []);
+
   return (
-    <div className="todos-page-container">
+    <div className="animate-fade-in space-y-4 py-2">
       {error && (
-        <div className="error-banner">
-          <p>{error}</p>
-          <button onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}>
-            Clear Error
+        <div className="flex items-center justify-between px-4 py-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-700">
+          <span>{error}</span>
+          <button
+            onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_ERROR })}
+            className="ml-4 text-red-500 hover:text-red-700 transition-colors"
+            aria-label="Dismiss error"
+          >
+            ✕
           </button>
         </div>
       )}
+
       {filterError && (
-        <div className="filter-error-banner">
-          <p>{filterError}</p>
+        <div className="flex items-center justify-between px-4 py-3 bg-amber-50 border border-amber-100 rounded-xl text-sm text-amber-700">
+          <span>{filterError}</span>
           <button
             onClick={() => dispatch({ type: TODO_ACTIONS.CLEAR_FILTER_ERROR })}
+            className="ml-4 text-amber-500 hover:text-amber-700 transition-colors"
+            aria-label="Dismiss filter error"
           >
-            Clear Filter Error
+            ✕
           </button>
         </div>
       )}
 
-      {isTodoListLoading && <p>Loading tasks...</p>}
+      {/* Controls row */}
+      <div className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+        <SortBy
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSortByChange={(s) =>
+            dispatch({
+              type: TODO_ACTIONS.SET_SORT,
+              payload: { sortBy: s, sortDirection },
+            })
+          }
+          onSortDirectionChange={(dir) =>
+            dispatch({
+              type: TODO_ACTIONS.SET_SORT,
+              payload: { sortBy: state.sortBy, sortDirection: dir },
+            })
+          }
+        />
+        <div className="flex flex-wrap gap-3 items-end">
+          <StatusFilter />
+          <FilterInput
+            filterTerm={filterTerm}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
+      </div>
 
-      <SortBy
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSortByChange={(s) =>
-          dispatch({
-            type: TODO_ACTIONS.SET_SORT,
-            payload: { sortBy: s, sortDirection: sortDirection },
-          })
-        }
-        onSortDirectionChange={(dir) =>
-          dispatch({
-            type: TODO_ACTIONS.SET_SORT,
-            payload: { sortBy: state.sortBy, sortDirection: dir },
-          })
-        }
-      />
-      <StatusFilter />
-      <FilterInput
-        filterTerm={filterTerm}
-        onFilterChange={handleFilterChange}
-      />
+      {/* Add todo form */}
       <TodoForm onAddTodo={addTodo} />
 
-      <TodoList
-        todoList={todoList}
-        dataVersion={dataVersion}
-        onCompleteTodo={completeTodo}
-        onUpdateTodo={updateTodo}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        statusFilter={statusFilter}
-      />
+      {/* List */}
+      {isTodoListLoading ? (
+        <div className="flex items-center justify-center h-24">
+          <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <TodoList
+          todoList={todoList}
+          dataVersion={dataVersion}
+          onCompleteTodo={completeTodo}
+          onUpdateTodo={updateTodo}
+          onReorderTodos={reorderTodos}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          statusFilter={statusFilter}
+        />
+      )}
     </div>
   );
 }
