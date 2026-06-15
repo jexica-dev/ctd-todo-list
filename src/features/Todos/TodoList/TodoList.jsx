@@ -1,20 +1,19 @@
+import { useMemo, useRef } from 'react';
 import TodoListItem from './TodoListItem';
-import { useMemo } from 'react';
 
 function TodoList({
   todoList,
   dataVersion,
   onCompleteTodo,
   onUpdateTodo,
+  onReorderTodos,
   sortBy,
   sortDirection,
   statusFilter = 'active',
 }) {
-  const filteredTodoList = useMemo(() => {
-    console.log(
-      `Recalculating filtered todos (v${dataVersion}) - Status: ${statusFilter}`,
-    );
+  const dragIndexRef = useRef(null);
 
+  const filteredTodoList = useMemo(() => {
     let filteredTodos;
     switch (statusFilter) {
       case 'completed':
@@ -26,44 +25,63 @@ function TodoList({
       case 'all':
       default:
         filteredTodos = todoList;
-        break;
     }
-
-    return {
-      version: dataVersion,
-      todos: filteredTodos,
-    };
+    return { version: dataVersion, todos: filteredTodos };
   }, [todoList, dataVersion, sortBy, sortDirection, statusFilter]);
 
   const getEmptyMessage = () => {
     switch (statusFilter) {
       case 'completed':
-        return 'No completed todos yet. Complete some tasks to see them here.';
+        return 'No completed tasks yet.';
       case 'active':
-        return 'No active todos. Add a todo above to get started.';
-      case 'all':
+        return 'No active tasks. Add one above!';
       default:
-        return 'Add todo above to get started.';
+        return 'No tasks yet. Add one above to get started.';
     }
   };
 
+  // Map filtered index back to todoList index for reordering
+  const getOriginalIndex = (filteredIndex) => {
+    const filteredTodo = filteredTodoList.todos[filteredIndex];
+    return todoList.findIndex((t) => t.id === filteredTodo.id);
+  };
+
+  const handleDragStart = (filteredIndex) => {
+    dragIndexRef.current = filteredIndex;
+  };
+
+  const handleDrop = (dropFilteredIndex) => {
+    const dragFiltered = dragIndexRef.current;
+    if (dragFiltered === null || dragFiltered === dropFilteredIndex) return;
+
+    const fromOriginal = getOriginalIndex(dragFiltered);
+    const toOriginal = getOriginalIndex(dropFilteredIndex);
+    onReorderTodos(fromOriginal, toOriginal);
+    dragIndexRef.current = null;
+  };
+
+  if (filteredTodoList.todos.length === 0) {
+    return (
+      <p className="text-center text-sm text-gray-400 py-12">
+        {getEmptyMessage()}
+      </p>
+    );
+  }
+
   return (
-    <>
-      {filteredTodoList.todos.length === 0 ? (
-        <p>{getEmptyMessage()}</p>
-      ) : (
-        <ul>
-          {filteredTodoList.todos.map((todo) => (
-            <TodoListItem
-              key={todo.id}
-              todo={todo}
-              onCompleteTodo={onCompleteTodo}
-              onUpdateTodo={onUpdateTodo}
-            />
-          ))}
-        </ul>
-      )}
-    </>
+    <ul className="space-y-2">
+      {filteredTodoList.todos.map((todo, filteredIndex) => (
+        <TodoListItem
+          key={todo.id}
+          todo={todo}
+          index={filteredIndex}
+          onCompleteTodo={onCompleteTodo}
+          onUpdateTodo={onUpdateTodo}
+          onDragStart={handleDragStart}
+          onDrop={handleDrop}
+        />
+      ))}
+    </ul>
   );
 }
 
