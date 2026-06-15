@@ -1,7 +1,10 @@
 export default function FilterInput({ filterTerm, onFilterChange }) {
   return (
-    <div className="filter-input-container" style={{ marginBottom: '1.5rem' }}>
-      <label htmlFor="filterInput" style={{ marginRight: '0.5rem' }}>
+    <div className="flex items-center gap-2 flex-1 min-w-[180px]">
+      <label
+        className="text-sm text-gray-500 whitespace-nowrap shrink-0"
+        htmlFor="filterInput"
+      >
         Search todos:
       </label>
       <input
@@ -10,7 +13,7 @@ export default function FilterInput({ filterTerm, onFilterChange }) {
         value={filterTerm}
         onChange={(e) => onFilterChange(e.target.value)}
         placeholder="Search by title..."
-        style={{ padding: '0.25rem 0.5rem', width: '100%', maxWidth: '300px' }}
+        className="w-full px-3 py-1.5 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition"
       />
     </div>
   );
