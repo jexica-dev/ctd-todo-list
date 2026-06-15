@@ -22,8 +22,6 @@ function ProfilePage() {
 
         const data = await response.json();
         const tasks = data.tasks || [];
-
-        // Calculate statistics
         const total = tasks.length;
         const completed = tasks.filter((t) => t.isCompleted).length;
         const active = total - completed;
@@ -39,41 +37,74 @@ function ProfilePage() {
     if (token) fetchStats();
   }, [token]);
 
-  // Calculate completion rate safely
-  const completionPercentage =
+  const completionPct =
     stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
-  if (loading) return <p>Loading profile...</p>;
-  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  const initials = email ? email.slice(0, 2).toUpperCase() : '?';
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-40">
+        <div className="w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-700">
+        Error: {error}
+      </div>
+    );
 
   return (
-    <div className="profile-container">
-      <h1>User Profile</h1>
-      <div className="user-info">
-        <p>
-          <strong>Username:</strong> {email || 'Guest'}
-        </p>
+    <div className="animate-fade-in space-y-6 py-2">
+      {/* Avatar + email */}
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-semibold text-sm">
+          {initials}
+        </div>
+        <div>
+          <p className="font-medium text-gray-900">{email || 'Guest'}</p>
+          <p className="text-sm text-gray-400">Registered user</p>
+        </div>
       </div>
 
-      <section className="stats-section">
-        <h2>Todo Statistics</h2>
-        <div className="stats-grid" style={{ display: 'flex', gap: '20px' }}>
-          <div className="stat-card">
-            <h3>Total Tasks</h3>
-            <p>{stats.total}</p>
-          </div>
-          <div className="stat-card">
-            <h3>Completed</h3>
-            <p>{stats.completed}</p>
-          </div>
-          <div className="stat-card">
-            <h3>Active</h3>
-            <p>{stats.active}</p>
-          </div>
+      {/* Stats */}
+      <section>
+        <h2 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">
+          Task statistics
+        </h2>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: 'Total', value: stats.total },
+            { label: 'Completed', value: stats.completed },
+            { label: 'Active', value: stats.active },
+          ].map((s) => (
+            <div
+              key={s.label}
+              className="bg-white rounded-xl border border-gray-100 p-4 text-center"
+            >
+              <p className="text-2xl font-semibold text-gray-900">{s.value}</p>
+              <p className="text-xs text-gray-400 mt-1">{s.label}</p>
+            </div>
+          ))}
         </div>
-        <p>
-          <strong>Completion Rate:</strong> {completionPercentage}%
-        </p>
+      </section>
+
+      {/* Progress bar */}
+      <section className="bg-white rounded-xl border border-gray-100 p-4">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-sm font-medium text-gray-700">Completion rate</p>
+          <p className="text-sm font-semibold text-brand-600">
+            {completionPct}%
+          </p>
+        </div>
+        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-2 bg-brand-500 rounded-full transition-all duration-500"
+            style={{ width: `${completionPct}%` }}
+          />
+        </div>
       </section>
     </div>
   );
