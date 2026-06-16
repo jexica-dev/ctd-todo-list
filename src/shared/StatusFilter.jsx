@@ -6,7 +6,6 @@ function StatusFilter() {
 
   const handleStatusChange = (status) => {
     if (status === 'all') {
-      // Remove status param for 'all' to keep URL clean
       searchParams.delete('status');
     } else {
       searchParams.set('status', status);
@@ -14,18 +13,27 @@ function StatusFilter() {
     setSearchParams(searchParams);
   };
 
+  const options = [
+    { value: 'all', label: 'All' },
+    { value: 'active', label: 'Active' },
+    { value: 'completed', label: 'Done' },
+  ];
+
   return (
-    <div>
-      <label htmlFor="statusFilter">Show:</label>
-      <select
-        id="statusFilter"
-        value={currentStatus}
-        onChange={(e) => handleStatusChange(e.target.value)}
-      >
-        <option value="all">All Todos</option>
-        <option value="active">Active Todos</option>
-        <option value="completed">Completed Todos</option>
-      </select>
+    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+      {options.map(({ value, label }) => (
+        <button
+          key={value}
+          onClick={() => handleStatusChange(value)}
+          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+            currentStatus === value
+              ? 'bg-white text-gray-900 font-medium shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          {label}
+        </button>
+      ))}
     </div>
   );
 }

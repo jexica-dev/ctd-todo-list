@@ -12,30 +12,32 @@ import NotFoundPage from './pages/NotFoundPage';
 function App() {
   return (
     <>
-      <div className="app-container">
+      <div className="min-h-screen bg-gray-50">
         <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/todos"
-            element={
-              <RequireAuth>
-                <TodosPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <RequireAuth>
-                <ProfilePage />
-              </RequireAuth>
-            }
-          />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+        <main className="max-w-2xl mx-auto px-4 py-8">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/tasks"
+              element={
+                <RequireAuth>
+                  <TodosPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <RequireAuth>
+                  <ProfilePage />
+                </RequireAuth>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
       </div>
     </>
   );

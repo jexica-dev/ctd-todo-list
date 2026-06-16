@@ -8,7 +8,7 @@ function HomePage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/todos', { replace: true });
+      navigate('/tasks', { replace: true });
     } else {
       navigate('/login', { replace: true });
     }

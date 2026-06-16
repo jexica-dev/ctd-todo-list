@@ -5,12 +5,13 @@ function Navigation() {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Helper function for NavLink style object
-  const navLinkStyle = ({ isActive }) => ({
-    fontWeight: isActive ? 'bold' : 'normal',
-    textDecoration: isActive ? 'underline' : 'none',
-    color: 'inherit',
-  });
+  const linkBase =
+    'text-sm text-gray-500 hover:text-gray-900 transition-colors px-2 py-1 rounded-md hover:bg-gray-100';
+
+  const activeLink = 'text-gray-900 font-medium';
+
+  const navLinkClass = ({ isActive }) =>
+    `${linkBase} ${isActive ? activeLink : ''}`;
 
   const handleLogout = async () => {
     await logout();
@@ -19,11 +20,9 @@ function Navigation() {
 
   return (
     <nav>
-      <ul
-        style={{ listStyle: 'none', display: 'flex', gap: '1rem', padding: 0 }}
-      >
+      <ul className="flex items-center gap-1">
         <li>
-          <NavLink to="/about" style={navLinkStyle}>
+          <NavLink className={navLinkClass} to="/about">
             About
           </NavLink>
         </li>
@@ -31,24 +30,27 @@ function Navigation() {
         {isAuthenticated ? (
           <>
             <li>
-              <NavLink to="/todos" style={navLinkStyle}>
-                Todos
+              <NavLink className={navLinkClass} to="/tasks">
+                Tasks
               </NavLink>
             </li>
             <li>
-              <NavLink to="/profile" style={navLinkStyle}>
+              <NavLink className={navLinkClass} to="/profile">
                 Profile
               </NavLink>
             </li>
             <li>
-              <button onClick={handleLogout} style={{ cursor: 'pointer' }}>
+              <button
+                className="text-sm text-gray-500 hover:text-red-600 transition-colors px-2 py-1 rounded-md hover:bg-red-50 cursor-pointer"
+                onClick={handleLogout}
+              >
                 Logout
               </button>
             </li>
           </>
         ) : (
           <li>
-            <NavLink to="/login" style={navLinkStyle}>
+            <NavLink className={navLinkClass} to="/login">
               Login
             </NavLink>
           </li>

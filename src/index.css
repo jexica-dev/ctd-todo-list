@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
+
+/* Drag-and-drop ghost styles */
+@layer utilities {
+  .dragging {
+    @apply opacity-40 scale-95;
+  }
+  .drag-over {
+    @apply border-t-2 border-brand-500;
+  }
+}

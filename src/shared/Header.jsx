@@ -1,15 +1,15 @@
-import Logoff from '../features/Logoff';
-import { useAuth } from '../contexts/AuthContext';
 import Navigation from './Navigation';
 
 function Header() {
-  const { isAuthenticated } = useAuth();
   return (
-    <>
-      <h1>Todo List</h1>
-      <Navigation />
-      {isAuthenticated && <Logoff />}
-    </>
+    <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
+      <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+        <span className="text-2xl tracking-wide font-bold text-gray-900 tracking-tight">
+          Taskly
+        </span>
+        <Navigation />
+      </div>
+    </header>
   );
 }
 

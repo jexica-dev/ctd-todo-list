@@ -11,6 +11,7 @@ export const TODO_ACTIONS = {
   UPDATE_TODO_START: 'UPDATE_TODO_START',
   UPDATE_TODO_SUCCESS: 'UPDATE_TODO_SUCCESS',
   UPDATE_TODO_ERROR: 'UPDATE_TODO_ERROR',
+  REORDER_TODOS: 'REORDER_TODOS',
   SET_SORT: 'SET_SORT',
   SET_FILTER: 'SET_FILTER',
   CLEAR_ERROR: 'CLEAR_ERROR',
@@ -71,7 +72,6 @@ export function todoReducer(state, action) {
             : todo,
         ),
       };
-
     case TODO_ACTIONS.COMPLETE_TODO_ERROR:
       return {
         ...state,
@@ -80,11 +80,8 @@ export function todoReducer(state, action) {
           t.id === action.payload.id ? action.payload.originalTodo : t,
         ),
       };
-
     case TODO_ACTIONS.COMPLETE_TODO_SUCCESS:
-      return {
-        ...state,
-      };
+      return { ...state };
 
     case TODO_ACTIONS.UPDATE_TODO_START:
       return {
@@ -93,13 +90,8 @@ export function todoReducer(state, action) {
           t.id === action.payload.id ? action.payload : t,
         ),
       };
-
     case TODO_ACTIONS.UPDATE_TODO_SUCCESS:
-      return {
-        ...state,
-        error: '', // Clear any lingering errors
-      };
-
+      return { ...state, error: '' };
     case TODO_ACTIONS.UPDATE_TODO_ERROR:
       return {
         ...state,
@@ -108,6 +100,14 @@ export function todoReducer(state, action) {
           t.id === action.payload.id ? action.payload.originalTodo : t,
         ),
       };
+
+    case TODO_ACTIONS.REORDER_TODOS: {
+      const { dragIndex, dropIndex } = action.payload;
+      const newList = [...state.todoList];
+      const [moved] = newList.splice(dragIndex, 1);
+      newList.splice(dropIndex, 0, moved);
+      return { ...state, todoList: newList };
+    }
 
     case TODO_ACTIONS.SET_SORT:
       return {
