@@ -50,8 +50,8 @@ A clean, fast task manager built with React. Every change appears instantly with
 ### Installation
 
 ```bash
-git clone https://github.com/jexica-dev/<your-repo-name>.git
-cd <your-repo-name>
+git clone https://github.com/jexica-dev/ctd-todo-list.git
+cd ctd-todo-list
 npm install
 ```
 
