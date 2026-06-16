@@ -2,7 +2,7 @@
 
 A clean, fast task manager built with React. Every change appears instantly with optimistic UI updates while syncing to the server in the background.
 
-**Live demo:** _[your-app.vercel.app]_ <!-- replace after deploying -->
+**Live demo:** _[[taskly-jexica.vercel.app](https://taskly-jexica.vercel.app/)]_ 
 
 ---
 
@@ -22,7 +22,7 @@ A clean, fast task manager built with React. Every change appears instantly with
 
 | Desktop | Mobile |
 |---------|--------|
-| _add screenshot_ | _add screenshot_ |
+| ![Desktop view](public/screenshots/desktop.png) | ![Mobile view](public/screenshots/mobile.png) |
 
 ---
 
